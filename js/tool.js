@@ -1,5 +1,7 @@
 export const pipe = (...fns) => fns.reduce((f, g) => (...xs) => f(g(...xs)));
 
+export const prop = k => o => o[k];
+
 export const rndNum = ({ max = 10, min = 0 } = { max: 10, min: 0 }) => Math.floor(Math.random() * (max - min)) + min;
 
 export const rndPoint = max => ({ x: rndNum({ max }), y: rndNum({ max }) });
@@ -17,18 +19,19 @@ export const childAt = elem => i => elem.children.item(i);
 
 export const addToken = token => elem => elem.classList.add(token);
 
-export const getDir = event => ({
+export const getMoveState = event => ({
   'ArrowUp': { axis: 'y', sign: -1 },
   'ArrowRight': { axis: 'x', sign: 1 },
   'ArrowDown': { axis: 'y', sign: 1 },
   'ArrowLeft': { axis: 'x', sign: -1 },
 })[event.key];
 
-export const movedPoint = dir => p => Object.assign({}, p, { [dir.axis]: p[dir.axis] + dir.sign });
+export const movedPoint = move => p => Object.assign({}, p, { [move.axis]: p[move.axis] + move.sign });
 
 export const initState = () => ({
+  timerId: null,
   countTile: 20,
-  dir: { axis: 'x', sign: 1 },
+  move: { axis: 'x', sign: 1 },
   snake: [{ x: 2, y: 1 }, { x: 1, y: 1 }],
   bean: null,
 });

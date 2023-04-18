@@ -1,4 +1,4 @@
-import { getDir, movedPoint, initState, calcIdx, pipe, childAt } from './tool.js';
+import { initState, getMoveState, movedPoint, pipe, calcIdx, childAt, eqPos, prop } from './tool.js';
 
 const mapElem = document.childAtentById('map');
 const state = initState();
@@ -10,7 +10,13 @@ const state = initState();
 // 若食豆 -> 添加 tail
 // 若可继续则更新砖块 否则 clearInterval
 
-const snakeMoved = snake => snake.map(movedPoint(state.dir));
+function isSafe() {
+  const inRange = max => n => 0 <= n && n < max;
+  const inMap = pipe(prop(state.move.axis), inRange(state.countTile));
+  const eatSelf = () => state.snake.slice(1).some(eqPos(state.snake[0]));
+
+  return inMap(state.snake) && !eatSelf();
+}
 
 function updateTile() {
   Array.from(mapElem.children).forEach(child => child.className = '');
@@ -19,9 +25,13 @@ function updateTile() {
   draw('bean')(state.bean);
 }
 
+function gameOver() {
+  clearInterval(state.timerId);
+}
+
 function run() {
-  state.snake = snakeMoved(state.snake);
-  checkState(state) && updateTile();
+  state.snake = state.snake.map(movedPoint(state.move));
+  isSafe() ? updateTile() : gameOver();
 }
 
 const createTiles = (n, frag = new DocumentFragment()) => {
@@ -30,7 +40,7 @@ const createTiles = (n, frag = new DocumentFragment()) => {
 }
 
 function main() {
-  addEventListener('keyup', event => { state.dir = getDir(event) });
+  addEventListener('keyup', event => { state.move = getMoveState(event) });
   mapElem.children = createTiles();
   state.bean = rndBeanPos(state.countTile, state.snake);
   state.timerId = setInterval(run, 200);
