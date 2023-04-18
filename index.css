@@ -1,0 +1,20 @@
+body { margin: 0; }
+
+#container {
+  position: relative;
+  --size: 20px;
+  width: calc(var(--size) * 20);
+  height: calc(var(--size) * 20);
+  margin-block-start: 20px;
+  margin-inline: auto;
+}
+
+#container > div {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background: var(--background-color, rgb(150,200,100));
+}
+
+.body { --background-color: rgb(100,200,220); }
+.bean { --background-color: gold; }
