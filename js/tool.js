@@ -1,13 +1,21 @@
+export const pipe = (...fns) => fns.reduce((f, g) => (...xs) => f(g(...xs)));
+
 export const rndNum = ({ max = 10, min = 0 } = { max: 10, min: 0 }) => Math.floor(Math.random() * (max - min)) + min;
 
 export const rndPoint = max => ({ x: rndNum({ max }), y: rndNum({ max }) });
-
-const eqPos = p1 => p2 => p1.x == p2.x && p1.y == p2.y;
 
 export const rndBeanPoint = (max, snake) => {
   const p = rndPoint(max);
   return snake.some(eqPos(p)) ? rndBeanPoint(max, snake) : p;
 };
+
+export const eqPos = p1 => p2 => p1.x == p2.x && p1.y == p2.y;
+
+export const calcIdx = count => p => p.x * count + p.y;
+
+export const childAt = elem => i => elem.children.item(i);
+
+export const addToken = token => elem => elem.classList.add(token);
 
 export const getDir = event => ({
   'ArrowUp': { axis: 'y', sign: -1 },
