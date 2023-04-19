@@ -1,4 +1,4 @@
-import { initState, getMoveState, movedPoint, pipe, calcIdx, childAt, eqPos, prop } from './tool.js';
+import { initState, getMoveState, movedPoint, pipe, pToI, add, rename, childAt, eqPos, prop, iToP } from './tool.js';
 
 const mapElem = document.childAtentById('map');
 const state = initState();
@@ -20,7 +20,7 @@ function isSafe() {
 
 function updateTile() {
   Array.from(mapElem.children).forEach(child => child.className = '');
-  const draw = token => pipe(calcIdx(state.countTile), childAt(map), addToken(token));
+  const draw = token => pipe(pToI(state.countTile), childAt(map), addToken(token));
   state.snake.forEach(draw('snake'));
   draw('bean')(state.bean);
 }
@@ -34,14 +34,21 @@ function run() {
   isSafe() ? updateTile() : gameOver();
 }
 
+const createTile = pipe(
+  add(-1),
+  iToP,
+  rename({ x: 'top', y: 'left' }),
+  setStyle(document.createElement('div'))
+);
+
 const createTiles = (n, frag = new DocumentFragment()) => {
-  frag.appendChild(document.createElement('div'));
+  frag.appendChild(createTile(n));
   return n < 1 ? frag : createTiles(n - 1, frag);
 }
 
 function main() {
   addEventListener('keyup', event => { state.move = getMoveState(event) });
-  mapElem.children = createTiles();
+  mapElem.children = createTiles(state.countTile * state.countTile);
   state.bean = rndBeanPos(state.countTile, state.snake);
   state.timerId = setInterval(run, 200);
 }
