@@ -10,7 +10,9 @@ const state = initState();
 // 若食豆 -> 添加 tail
 // 若可继续则更新砖块 否则 clearInterval
 
-function isSafe() {
+function eat() {}
+
+function alive() {
   const inRange = max => n => 0 <= n && n < max;
   const inMap = pipe(prop(state.move.axis), inRange(state.countTile));
   const eatSelf = () => state.snake.slice(1).some(eqPos(state.snake[0]));
@@ -31,13 +33,23 @@ function gameOver() {
 
 function run() {
   state.snake = state.snake.map(movedPoint(state.move));
-  isSafe() ? updateTile() : gameOver();
+  if (!alive()) {
+    gameOver();
+    return;
+  }
+  
+  // 蛇头位置同 bean 则 蛇添加一节，再生成食物
+  if (eqPos(state.bean)(state.snake[0])) {
+    state.snake.push();
+    state.bean = rndBeanPos(state.countTile, state.snake);
+  }
+    updateTile();
 }
 
 const createTile = pipe(
   add(-1),
-  iToP,
-  rename({ x: 'top', y: 'left' }),
+  iToP(state.countTile),
+  rename({ x: 'left', y: 'top' }),
   setStyle(document.createElement('div'))
 );
 

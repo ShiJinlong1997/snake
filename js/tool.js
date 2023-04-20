@@ -25,7 +25,7 @@ export const eqPos = p1 => p2 => p1.x == p2.x && p1.y == p2.y;
 
 export const pToI = count => p => p.x * count + p.y;
 
-export const iToP = count => i => ({ x: i % count, y: i % count });
+export const iToP = count => i => ({ x: i % count * count, y: i % count * count });
 
 export const childAt = elem => i => elem.children.item(i);
 
@@ -43,9 +43,11 @@ export const getMoveState = event => ({
   'ArrowLeft': { axis: 'x', sign: -1 },
 })[event.key];
 
-const axisMoved = move => p => ({ [move.axis]: add(p[move.axis])(move.sign) });
+const axisMoved = move => p => ( Reflect.set(p, move.axis, p[move.axis] + move.sign) , p );
 
-export const movedPoint = move => p => pipe(axisMoved(move), assign(p));
+const copy = o => Object.assign({}, o);
+
+export const movedPoint = move => pipe(copy, axisMoved(move));
 
 export const initState = () => ({
   timerId: null,
