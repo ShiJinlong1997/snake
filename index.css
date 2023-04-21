@@ -1,24 +1,20 @@
 body { margin: 0; }
 
-#container {
-  position: relative;
-  --size: 20px;
-  width: calc(var(--size) * 20);
-  height: calc(var(--size) * 20);
+#map {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  width: 200px;
+  height: 200px;
   margin-block-start: 20px;
   margin-inline: auto;
 }
 
-#container > div {
-  --top: ;
-  --left: ;
-  position: absolute;
-  top: var(--top);
-  left: var(--left);
-  width: var(--size);
-  height: var(--size);
+#map > div {
+  width: 20px;
+  height: 20px;
   background: var(--background-color, rgb(150,200,100));
 }
 
-.body { --background-color: rgb(100,200,220); }
+.snake { --background-color: rgb(100,200,220); }
 .bean { --background-color: gold; }

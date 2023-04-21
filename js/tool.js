@@ -1,4 +1,4 @@
-export const pipe = (...fns) => fns.reduce((f, g) => (...xs) => f(g(...xs)));
+export const pipe = (...fns) => fns.reduce((f, g) => (...xs) => g(f(...xs)));
 
 export const prop = k => o => o[k];
 
@@ -9,6 +9,8 @@ export const last = arr => arr.at(-1);
 export const add = x => y => x + y;
 
 export const assign = target => source => Object.assign({}, target, source);
+
+export const inRange = max => n => 0 <= n && n < max;
 
 export const rndNum = ({ max = 10, min = 0 } = { max: 10, min: 0 }) => Math.floor(Math.random() * (max - min)) + min;
 
@@ -21,15 +23,18 @@ export const rndBeanPos = (max, snake) => {
 
 export const eqPos = p1 => p2 => p1.x == p2.x && p1.y == p2.y;
 
-export const pointToIndex = mapSize => p => p.x * mapSize + p.y;
+export const pointToIndex = mapSize => p => p.y * mapSize + p.x;
 
-export const toStyle = mapSize => i => ({ '--left': i % mapSize * mapSize, '--top': i % mapSize * mapSize });
+export const toStyle = ({ mapSize, tileSize }) => i => ({
+  '--left': `${ Math.floor(i % mapSize * tileSize) }px`,
+  '--top': `${ Math.floor(i / mapSize) * tileSize }px`,
+});
 
 export const childAt = children => i => children.item(i);
 
 export const addToken = token => classList => classList.add(token);
 
-export const setStyle = elem => o => {
+export const setStyle = o => elem => {
   Object.entries(o).forEach(([k, v]) => elem.style.setProperty(k, v));
   return elem;
 };
@@ -47,7 +52,8 @@ export const movedPoint = move => p => ( Reflect.set(p, move.axis, p[move.axis] 
 
 export const initState = () => ({
   timerId: null,
-  mapSize: 20,
+  mapSize: 10,
+  tileSize: 20,
   move: { axis: 'x', sign: 1 },
   snake: [{ x: 1, y: 0 }, { x: 0, y: 0 }],
   bean: null,
