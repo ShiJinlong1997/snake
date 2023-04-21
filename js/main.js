@@ -1,28 +1,19 @@
-import { initState, getMoveState, movedPoint, pipe, pToI, add, rename, childAt, eqPos, prop, iToP } from './tool.js';
+import * as _ from './tool.js';
 
 const mapElem = document.childAtentById('map');
-const state = initState();
+const state = _.initState();
 
-// 蛇向当前方向移一格
-// 之后一系列判断：
-// 若撞墙 -> game over
-// 若食己 -> game over
-// 若食豆 -> 添加 tail
-// 若可继续则更新砖块 否则 clearInterval
-
-function eat() {}
-
-function alive() {
+function alive(snake) {
   const inRange = max => n => 0 <= n && n < max;
-  const inMap = pipe(prop(state.move.axis), inRange(state.countTile));
-  const eatSelf = () => state.snake.slice(1).some(eqPos(state.snake[0]));
+  const inMap = _.pipe(_.fst, _.prop(state.move.axis), inRange(state.countTile));
+  const eatSelf = _.pipe(_.fst, _.eqPos);
 
-  return inMap(state.snake) && !eatSelf();
+  return inMap(snake) && snake.slice(1).some( eatSelf(snake) );
 }
 
 function updateTile() {
   Array.from(mapElem.children).forEach(child => child.className = '');
-  const draw = token => pipe(pToI(state.countTile), childAt(map), addToken(token));
+  const draw = token => _.pipe(_.pointToIndex(state.countTile), _.childAt(mapElem.children), _.prop('classList'), addToken(token));
   state.snake.forEach(draw('snake'));
   draw('bean')(state.bean);
 }
@@ -31,27 +22,30 @@ function gameOver() {
   clearInterval(state.timerId);
 }
 
+const newHead = _.pipe(_.fst, _.copy, _.movedPoint(state.move));
+const eaten = _.pipe(_.fst, _.eqPos(state.bean));
+
+const snakeMoved = snake => {
+  const appendPrev = (result, p, i, ps) => [...result, _.copy(ps[i - 1])];
+  return snake.slice(1).reduce(appendPrev, [newHead(snake)]);
+};
+
 function run() {
-  state.snake = state.snake.map(movedPoint(state.move));
-  if (!alive()) {
+  state.snake = snakeMoved(state.snake);
+
+  if (!alive(state.snake)) {
     gameOver();
     return;
   }
-  
-  // 蛇头位置同 bean 则 蛇添加一节，再生成食物
-  if (eqPos(state.bean)(state.snake[0])) {
-    state.snake.push();
-    state.bean = rndBeanPos(state.countTile, state.snake);
+
+  if (eaten(state.snake)) {
+    state.bean = _.rndBeanPos(state.countTile, state.snake);
   }
-    updateTile();
+
+  updateTile();
 }
 
-const createTile = pipe(
-  add(-1),
-  iToP(state.countTile),
-  rename({ x: 'left', y: 'top' }),
-  setStyle(document.createElement('div'))
-);
+const createTile = _.pipe(_.add(-1), _.toStyle(state.countTile), _.setStyle(document.createElement('div')));
 
 const createTiles = (n, frag = new DocumentFragment()) => {
   frag.appendChild(createTile(n));
@@ -59,8 +53,8 @@ const createTiles = (n, frag = new DocumentFragment()) => {
 }
 
 function main() {
-  addEventListener('keyup', event => { state.move = getMoveState(event) });
-  mapElem.children = createTiles(state.countTile * state.countTile);
-  state.bean = rndBeanPos(state.countTile, state.snake);
+  addEventListener('keyup', event => { state.move = _.getMoveState(event) });
+  mapElem.appendChild( createTiles(state.countTile * state.countTile) );
+  state.bean = _.rndBeanPos(state.countTile, state.snake);
   state.timerId = setInterval(run, 200);
 }

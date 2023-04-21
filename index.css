@@ -10,7 +10,11 @@ body { margin: 0; }
 }
 
 #container > div {
+  --top: ;
+  --left: ;
   position: absolute;
+  top: var(--top);
+  left: var(--left);
   width: var(--size);
   height: var(--size);
   background: var(--background-color, rgb(150,200,100));
