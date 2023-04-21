@@ -21,9 +21,9 @@ export const rndBeanPos = (max, snake) => {
 
 export const eqPos = p1 => p2 => p1.x == p2.x && p1.y == p2.y;
 
-export const pointToIndex = count => p => p.x * count + p.y;
+export const pointToIndex = mapSize => p => p.x * mapSize + p.y;
 
-export const toStyle = count => i => ({ '--left': i % count * count, '--top': i % count * count });
+export const toStyle = mapSize => i => ({ '--left': i % mapSize * mapSize, '--top': i % mapSize * mapSize });
 
 export const childAt = children => i => children.item(i);
 
@@ -47,7 +47,7 @@ export const movedPoint = move => p => ( Reflect.set(p, move.axis, p[move.axis] 
 
 export const initState = () => ({
   timerId: null,
-  countTile: 20,
+  mapSize: 20,
   move: { axis: 'x', sign: 1 },
   snake: [{ x: 1, y: 0 }, { x: 0, y: 0 }],
   bean: null,
