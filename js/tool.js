@@ -40,21 +40,21 @@ export const setStyle = o => elem => {
 };
 
 export const getMoveState = event => ({
-  'ArrowUp': { axis: 'y', sign: -1 },
-  'ArrowRight': { axis: 'x', sign: 1 },
-  'ArrowDown': { axis: 'y', sign: 1 },
-  'ArrowLeft': { axis: 'x', sign: -1 },
+  'ArrowUp': { axis: 'y', sign: -1, dir: 'up' },
+  'ArrowRight': { axis: 'x', sign: 1, dir: 'right' },
+  'ArrowDown': { axis: 'y', sign: 1, dir: 'down' },
+  'ArrowLeft': { axis: 'x', sign: -1, dir: 'left' },
 })[event.key];
 
 export const copy = o => Object.assign({}, o);
 
-export const movedPoint = move => p => ( Reflect.set(p, move.axis, p[move.axis] + move.sign) , p );
+export const movedPoint = move => p => (p[move.axis] += move.sign, p);
 
 export const initState = () => ({
   timerId: null,
   mapSize: 10,
   tileSize: 20,
-  move: { axis: 'x', sign: 1 },
+  move: { axis: 'x', sign: 1, dir: 'right' },
   snake: [{ x: 1, y: 0 }, { x: 0, y: 0 }],
   bean: null,
 });

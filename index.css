@@ -16,5 +16,15 @@ body { margin: 0; }
   background: var(--background-color, rgb(150,200,100));
 }
 
-.snake { --background-color: rgb(100,200,220); }
 .bean { --background-color: gold; }
+
+.snake { --background-color: rgb(100,200,220); }
+.snake::before {
+  content: var(--content, '');
+  text-align: center;
+  color: #fff;
+}
+.snake.up::before { --content: '\1f879'; }
+.snake.right::before { --content: '\1f87a'; }
+.snake.down::before { --content: '\1f87b'; }
+.snake.left::before { --content: '\1f878'; }

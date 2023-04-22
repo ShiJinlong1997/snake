@@ -14,6 +14,7 @@ function alive(snake) {
 function updateTile() {
   Array.from(mapElem.children).forEach(child => child.className = '');
   state.snake.forEach(draw('snake'));
+  draw(state.move.dir)(_.fst(state.snake))
   draw('bean')(state.bean);
 }
 
@@ -28,6 +29,7 @@ const snakeMoved = snake => {
 };
 
 function run() {
+  const last = _.copy(_.last(state.snake));
   state.snake = snakeMoved(state.snake);
   
   if (!alive(state.snake)) {
@@ -37,7 +39,7 @@ function run() {
   
   const eaten = _.pipe(_.fst, _.eqPos(state.bean));
   if (eaten(state.snake)) {
-    state.snake = [state.bean, ...state.snake];
+    state.snake = [...state.snake, last];
     state.bean = _.rndBeanPos(state.mapSize, state.snake);
   }
 
